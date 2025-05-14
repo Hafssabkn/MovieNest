@@ -7,10 +7,11 @@ class StartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        width: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('images/startBg.png'),
-            fit: BoxFit.cover, // ou BoxFit.fill ou BoxFit.contain selon le besoin
+            fit: BoxFit.fill, // ou BoxFit.fill ou BoxFit.contain selon le besoin
           ),
         ),
         child: Column(
@@ -19,7 +20,7 @@ class StartPage extends StatelessWidget {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/');
+                Navigator.pushNamed(context, '/search');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white.withOpacity(0.8),
