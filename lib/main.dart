@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:movienest/pages/home.dart';
 import 'package:movienest/pages/search.dart';
 import 'package:movienest/pages/splashScreen.dart';
 import 'package:movienest/pages/start.dart';
-import 'package:movienest/pages/main_navigation.dart'; // ici le menu en bas
+import 'package:movienest/pages/main_navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),
         '/start': (context) => const StartPage(),
+        '/home' : (context) => const Home(),
         '/search': (context) => SearchPage()
       },
     );

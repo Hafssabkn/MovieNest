@@ -41,7 +41,7 @@ class _HomeState extends State<Home> {
         title: Image.asset(
           'images/movieNest.png',
           fit: BoxFit.cover,
-          height: 30,
+          height: 140,
           filterQuality: FilterQuality.high,
         ),
         centerTitle: true,
