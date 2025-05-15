@@ -1,10 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:movienest/constante.dart';
 import 'dart:convert';
 
 import '../models/Movie.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -24,7 +28,7 @@ class _SearchPageState extends State<SearchPage> {
     'Animation': 16,
   };
 
-  final String apiKey = '966012d1eaf6a2bbe81cf279ad72234c'; // 🔑 Remplace ici
+  final String apiKey = Constante.apiKey;
 
   @override
   void initState() {
@@ -63,11 +67,14 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF330f3d),
       appBar: AppBar(
-        title: const Text('Catégories de films'),
+        backgroundColor: Color(0xFF330f3d),
+        title: const Text('Catégories de films',style: TextStyle(color: Colors.white)),
       ),
       body: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             DropdownButton<String>(
               value: selectedCategory,
@@ -80,7 +87,7 @@ class _SearchPageState extends State<SearchPage> {
               items: categoryMap.keys.map((String category) {
                 return DropdownMenuItem<String>(
                   value: category,
-                  child: Text(category),
+                  child: Text(category,style: TextStyle(color: Colors.white)),
                 );
               }).toList(),
             ),
@@ -89,6 +96,7 @@ class _SearchPageState extends State<SearchPage> {
               child: TextField(
                 decoration: InputDecoration(
                   labelText: 'Rechercher un film...',
+                  labelStyle: TextStyle(color: Colors.white),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.search),
                 ),
@@ -113,7 +121,7 @@ class _SearchPageState extends State<SearchPage> {
                       fit: BoxFit.cover,
                     )
                         : Icon(Icons.movie),
-                    title: Text(movie.title),
+                    title: Text(movie.title,style: TextStyle(color: Colors.white)),
                     subtitle: Text(movie.releaseDate ?? ''),
                   );
                 },

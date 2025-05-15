@@ -7,7 +7,6 @@ import 'package:movienest/widgets/rated_slider.dart';
 import 'package:movienest/pages/api_service.dart';
 
 
-
 class Home extends StatefulWidget {
   const Home({super.key});
 
