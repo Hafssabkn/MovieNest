@@ -22,9 +22,9 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),     // Étape 1
-        '/start': (context) => const StartPage(),   // Étape 2
-        '/search': (context) => SearchPage() // Étape 3 avec menu
+        '/': (context) => const SplashScreen(),
+        '/start': (context) => const StartPage(),
+        '/search': (context) => SearchPage()
       },
     );
   }
