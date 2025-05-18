@@ -18,22 +18,34 @@ class StartPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Spacer(),
+            //----------------------------------
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/home');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.8),
-                padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                side: const BorderSide(
+                  color: Colors.white,
+                  width: 2,
+                ),
               ),
               child: const Text(
                 'GET STARTED',
                 style: TextStyle(
                   fontSize: 18,
-                  color: Color(0xFF330F3D),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
                 ),
               ),
             ),
+            //------------------------------------------
             const SizedBox(height: 40),
           ],
         ),

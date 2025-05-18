@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movienest/pages/data_base.dart';
+import 'package:movienest/services/data_base.dart';
 import '../models/movie.dart';
 
 

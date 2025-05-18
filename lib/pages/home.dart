@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:movienest/models/Movie.dart';
+import 'package:movienest/models/movie.dart';
 import 'package:movienest/widgets/carousel_slider.dart';
 import 'package:movienest/widgets/trending_slider.dart';
 import 'package:movienest/widgets/upcoming_slider.dart';
 import 'package:movienest/widgets/rated_slider.dart';
-import 'package:movienest/pages/api_service.dart';
+import 'package:movienest/services/api_services.dart';
 
 
 class Home extends StatefulWidget {

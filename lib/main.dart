@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:movienest/pages/favorite.dart';
 import 'package:movienest/pages/home.dart';
 import 'package:movienest/pages/search.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),
         '/start': (context) => const StartPage(),
-        '/home' : (context) => const Home(),
+        //'/home' : (context) => const Home(),
         '/home' : (context) => const MainNavigation(),
         '/search': (context) => SearchPage(),
       },
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainNavigation extends StatefulWidget {
+class MainNavigation extends StatefulWidget{
   const MainNavigation({super.key});
 
   @override
@@ -58,17 +59,37 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFC68EFD),
+      backgroundColor: Color(0xff5d2376),
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF330f3d),
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorite'),
-        ],
+      bottomNavigationBar: Container(
+        color: Color(0xFF330f3d),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
+          child: GNav(
+            backgroundColor: Color(0xFF330f3d),
+            color: Colors.white,
+            activeColor: Colors.white,
+            tabBackgroundColor: Color(0xff5d2376).withOpacity(0.4),
+            gap: 8,
+            padding: EdgeInsets.all(16.0),
+            selectedIndex: _selectedIndex,
+            onTabChange: _onItemTapped,
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                text: "Home",
+              ),
+              GButton(
+                icon: Icons.search,
+                text: "Search",
+              ),
+              GButton(
+                icon: Icons.favorite,
+                text: "Favorite",
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

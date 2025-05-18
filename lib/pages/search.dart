@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:movienest/constante.dart';
 import 'dart:convert';
-
-import '../models/Movie.dart';
+import '../models/movie.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -18,17 +16,20 @@ class _SearchPageState extends State<SearchPage> {
   String searchQuery = '';
   List<Movie> movies = [];
   bool isLoading = false;
+  final TextEditingController _searchController = TextEditingController();
 
   final Map<String, int> categoryMap = {
     'Action': 28,
-    'Comedy': 35,
-    'Drama': 18,
-    'Horror': 27,
-    'Science Fiction': 878,
+    'Comédie': 35,
+    'Drame': 18,
+    'Horreur': 27,
+    'Science-Fiction': 878,
     'Animation': 16,
+    'Aventure': 12,
+    'Fantastique': 14,
+    'Romance': 10749,
+    'Thriller': 53,
   };
-
-  final String apiKey = Constante.apiKey;
 
   @override
   void initState() {
@@ -36,24 +37,45 @@ class _SearchPageState extends State<SearchPage> {
     fetchMovies();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> fetchMovies() async {
     setState(() => isLoading = true);
     final genreId = categoryMap[selectedCategory];
     final url =
-        'https://api.themoviedb.org/3/discover/movie?api_key=$apiKey&with_genres=$genreId&language=fr';
+        'https://api.themoviedb.org/3/discover/movie?api_key=${Constante.apiKey}&with_genres=$genreId&language=fr';
 
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final results = data['results'] as List;
-
-      setState(() {
-        movies = results.map((json) => Movie.fromJson(json)).toList();
-        isLoading = false;
-      });
-    } else {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['results'] as List;
+        setState(() {
+          movies = results.map((json) => Movie.fromJson(json)).toList();
+          isLoading = false;
+        });
+      } else {
+        setState(() => isLoading = false);
+        _showError('Erreur de chargement des films');
+      }
+    } catch (e) {
       setState(() => isLoading = false);
+      _showError('Erreur de connexion');
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red[800],
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   List<Movie> get filteredMovies {
@@ -67,64 +89,189 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF330f3d),
-      appBar: AppBar(
-        backgroundColor: Color(0xFF330f3d),
-        title: const Text('Catégories de films',style: TextStyle(color: Colors.white)),
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            DropdownButton<String>(
-              value: selectedCategory,
-              onChanged: (value) {
-                setState(() {
-                  selectedCategory = value!;
-                  fetchMovies();
-                });
-              },
-              items: categoryMap.keys.map((String category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Text(category,style: TextStyle(color: Colors.white)),
-                );
-              }).toList(),
+        backgroundColor: const Color(0xFF330f3d),
+        body: SafeArea(
+          child: Column(
+              children: [
+          // Search Bar
+          Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.1),
+              hintText: 'Rechercher un film...',
+              hintStyle: const TextStyle(color: Colors.white70),
+              prefixIcon: const Icon(Icons.search, color: Colors.white70),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 0),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Rechercher un film...',
-                  labelStyle: TextStyle(color: Colors.white),
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.search),
+            style: const TextStyle(color: Colors.white),
+            onChanged: (value) => setState(() => searchQuery = value),
+          ),
+        ),
+
+        // Categories Horizontal Scroll
+        SizedBox(
+          height: 50,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: categoryMap.keys.map((category) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: Text(category,
+                      style: TextStyle(
+                          color: selectedCategory == category
+                              ? Colors.white
+                              : Colors.black)),
+                  selected: selectedCategory == category,
+                  selectedColor: const Color(0xFF330f3d).withOpacity(0.6),
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                  onSelected: (selected) {
+                    setState(() {
+                      selectedCategory = category;
+                      fetchMovies();
+                    });
+                  },
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    searchQuery = value;
-                  });
-                },
+              );
+            }).toList(),
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Results
+        Expanded(
+          child: isLoading
+              ? const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE50914)),
+            )
+          ): filteredMovies.isEmpty
+          ? const Center(
+          child: Text(
+            'Aucun résultat trouvé',
+            style: TextStyle(color: Colors.white70, fontSize: 16),
+          ),
+        )
+            : GridView.builder(
+    padding: const EdgeInsets.all(16),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2,
+    childAspectRatio: 0.7,
+    crossAxisSpacing: 16,
+    mainAxisSpacing: 16,
+    ),
+    itemCount: filteredMovies.length,
+    itemBuilder: (context, index) {
+    final movie = filteredMovies[index];
+    return _buildMovieCard(movie);
+    },
+    ),
+    ),
+    ],
+    ),
+    ),
+    );
+  }
+
+  Widget _buildMovieCard(Movie movie) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to movie details
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            // Movie Poster
+            movie.posterPath != null
+                ? Image.network(
+              'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: Colors.grey[800],
+                child: const Icon(Icons.movie, color: Colors.white24),
+              ),
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                        : null,
+                    color: const Color(0xFFE50914),
+                  ),
+                );
+              },
+            )
+                : Container(
+              color: Colors.grey[800],
+              child: const Center(
+                child: Icon(Icons.movie, color: Colors.white24),
               ),
             ),
-            isLoading
-                ? Expanded(child: Center(child: CircularProgressIndicator()))
-                : Expanded(
-              child: ListView.builder(
-                itemCount: filteredMovies.length,
-                itemBuilder: (context, index) {
-                  final movie = filteredMovies[index];
-                  return ListTile(
-                    leading: movie.posterPath != null
-                        ? Image.network(
-                      'https://image.tmdb.org/t/p/w92${movie.posterPath}',
-                      fit: BoxFit.cover,
-                    )
-                        : Icon(Icons.movie),
-                    title: Text(movie.title,style: TextStyle(color: Colors.white)),
-                    subtitle: Text(movie.releaseDate ?? ''),
-                  );
-                },
+
+            // Gradient Overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.1),
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
+              ),
+            ),
+
+            // Movie Info
+            Positioned(
+              left: 8,
+              right: 8,
+              bottom: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    movie.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        movie.voteAverage.toStringAsFixed(1),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      const Spacer(),
+                      Text(
+                        movie.releaseDate?.substring(0, 4) ?? '',
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
