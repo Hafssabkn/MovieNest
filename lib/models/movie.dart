@@ -8,8 +8,8 @@ class Movie {
   double voteAverage;
   String? originalLanguage;
   double? popularity;
-  List<String>? genres;      // nouveau champ
-  int? runtime;              // nouveau champ
+  List<String>? genres;
+  int? runtime;
 
   Movie({
     required this.id,
@@ -61,10 +61,13 @@ class Movie {
       voteAverage: map['vote_average'],
       originalLanguage: map['original_language'],
       popularity: map['popularity'],
-      genres: map['genres'] != null ? List<String>.from(map['genres']) : null,
+      genres: map['genres'] != null
+          ? (map['genres'] as String).split(',')
+          : null,
       runtime: map['runtime'],
     );
   }
+
 
   Map<String, dynamic> toMap() {
     return {

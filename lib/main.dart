@@ -5,9 +5,15 @@ import 'package:movienest/pages/home.dart';
 import 'package:movienest/pages/search.dart';
 import 'package:movienest/pages/splashScreen.dart';
 import 'package:movienest/pages/start.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-void main() {
-  runApp(const MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final dbPath = await getDatabasesPath();
+  await deleteDatabase(join(dbPath, 'favorites.db')); // Supprimer l'ancienne base
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -77,15 +83,15 @@ class _MainNavigationState extends State<MainNavigation> {
             tabs: const [
               GButton(
                 icon: Icons.home,
-                text: "Home",
+                text: "Accueil",
               ),
               GButton(
                 icon: Icons.search,
-                text: "Search",
+                text: "Recherche",
               ),
               GButton(
-                icon: Icons.favorite,
-                text: "Favorite",
+                icon: Icons.list,
+                text: "Librairie",
               ),
             ],
           ),

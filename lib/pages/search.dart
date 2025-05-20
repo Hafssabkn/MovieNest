@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:movienest/constante.dart';
 import 'dart:convert';
 import '../models/movie.dart';
+import 'moviesDetails.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -115,7 +116,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
 
-        // Categories Horizontal Scroll
+       // Catego horizontal
         SizedBox(
           height: 50,
           child: ListView(
@@ -185,7 +186,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget _buildMovieCard(Movie movie) {
     return GestureDetector(
       onTap: () {
-        // Navigate to movie details
+        Navigator.push(context,MaterialPageRoute(builder: (context)=>MoviesDetails(movie: movie)));
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),

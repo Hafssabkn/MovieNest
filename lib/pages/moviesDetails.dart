@@ -17,6 +17,7 @@ class MoviesDetails extends StatefulWidget {
 class _MoviesDetailsState extends State<MoviesDetails> with SingleTickerProviderStateMixin {
   bool _isFavorite = false;
   bool _isLoading = true;
+  bool _isInWatchlist = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -41,6 +42,13 @@ class _MoviesDetailsState extends State<MoviesDetails> with SingleTickerProvider
     });
     _animationController.forward();
     _checkFavoriteStatus();
+    _checkWatchlistStatus();
+  }
+  void _checkWatchlistStatus() async {
+    final isIn = await DBService.isInWatchlist(widget.movie.id);
+    setState(() {
+      _isInWatchlist = isIn;
+    });
   }
 
   @override
@@ -199,7 +207,7 @@ class _MoviesDetailsState extends State<MoviesDetails> with SingleTickerProvider
       child: IconButton(
         icon: Icon(
           _isFavorite ? Icons.favorite : Icons.favorite_border,
-          color: _isLoading ? Colors.grey : const Color(0xFFE50914),
+          color: _isFavorite ? Colors.red : Colors.white,
           size: 28,
         ),
         onPressed: _isLoading
@@ -228,6 +236,7 @@ class _MoviesDetailsState extends State<MoviesDetails> with SingleTickerProvider
           );
         },
       ),
+
     );
   }
 
@@ -477,7 +486,10 @@ class _MoviesDetailsState extends State<MoviesDetails> with SingleTickerProvider
           // Add to Watchlist Button
           Expanded(
             child: ElevatedButton.icon(
-              icon: const Icon(Icons.add, size: 24),
+              icon: Icon(
+                _isInWatchlist ? Icons.playlist_add_check : Icons.playlist_add,
+                color: Colors.white,
+              ),
               label: const Text('WATCHLIST'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
@@ -488,8 +500,24 @@ class _MoviesDetailsState extends State<MoviesDetails> with SingleTickerProvider
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),
-              onPressed: () {
-                // Implement watchlist functionality
+              onPressed: () async {
+                if (_isInWatchlist) {
+                  await DBService.removeFromWatchlist(widget.movie.id);
+                } else {
+                  await DBService.addToWatchlist(widget.movie);
+                }
+
+                setState(() {
+                  _isInWatchlist = !_isInWatchlist;
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(_isInWatchlist
+                        ? 'Ajouté à la watchlist'
+                        : 'Retiré de la watchlist'),
+                  ),
+                );
               },
             ),
           ),

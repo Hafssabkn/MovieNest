@@ -147,7 +147,6 @@ class ApiService {
 
 
 
-  /// Fonction statique pour retourner l'URL complète d'une bande-annonce YouTube
   static Future<String?> fetchTrailerUrl(int movieId) async {
     final api = ApiService();
     try {
